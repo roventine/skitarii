@@ -5,9 +5,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="skitarii",
-    version="0.0.1",
+    version="0.0.3",
     author="roventine",
-    author_email="solo-in-dark@abchina.com",
+    author_email="ukyotachibana@yeah.net",
     description="automata for routine",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -19,5 +19,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=['requests', 'lxml', 'logbook', 'demjson']
+    install_requires=['requests', 'lxml', 'logbook', 'demjson'],
 )

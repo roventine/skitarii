@@ -12,6 +12,7 @@ class Infiltrator31ms(Infiltrator):
     def __init__(self,
                  username: str,
                  password: str):
+        Infiltrator.__init__(self)
         self.username = username
         self.password = base64.b64encode(password.encode('utf-8'))
 
