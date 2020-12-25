@@ -171,6 +171,7 @@ class InfiltratorToELS(Infiltrator):
                 self.compulsory_courses[title] = course
         return self
 
+    @staticmethod
     def is_contains_single_select(questions):
         answers = []
         for question in questions:
@@ -181,17 +182,19 @@ class InfiltratorToELS(Infiltrator):
                     answers.append(raw_answer.split(',')[0].replace('\"', '').replace('(', ''))
                 return question_id, answers
 
-    def is_contains_judge(self,questions):
+    @staticmethod
+    def is_contains_judge(questions):
         for question in questions:
             question_typ = question.split(',')[2]
             if question_typ == '2':
                 question_id = question.split(',')[0].replace(' = new StudentQuestion("', '').replace('"', '')
                 return question_id
 
-    def is_pass(self,msg):
+    @staticmethod
+    def is_passed(msg):
         return msg.find('恭喜') > 0
 
-    def finish_quiz(self,id_course, id_quiz):
+    def finish_quiz(self, id_course, id_quiz):
         url_do_quiz = 'http://web.els.abc/student/courseCenter/doExam.action?id=' + id_course + '&rcoId=' + id_quiz
         r = self.session.get(url_do_quiz, headers=headers)
         data = {}
@@ -212,7 +215,7 @@ class InfiltratorToELS(Infiltrator):
                 quiz_point = 100
 
             questions = str_fragment_script.split('var stuQu')
-            question_id = is_contains_judge(questions)
+            question_id = self.is_contains_judge(questions)
 
             headers["Content-type"] = "application/x-www-form-urlencoded"
 
@@ -223,28 +226,34 @@ class InfiltratorToELS(Infiltrator):
                 data['questionType' + question_id] = '2'
                 data['questionPoint' + question_id] = quiz_point
                 data['answer_' + question_id] = '1'
-                r = s.post('http://web.els.abc/student/courseCenter/examSubmit.action', data=data, headers=headers)
+                r = self.session.post('http://web.els.abc/student/courseCenter/examSubmit.action',
+                                      data=data,
+                                      headers=headers)
                 if r.status_code == 200:
                     # print(r.text)
-                    if is_pass(r.text):
+                    if self.is_passed(r.text):
                         print('pass')
-                        return
+                        return self
                     else:
                         data['answer_' + question_id] = '-1'
-                        r = s.post('http://web.els.abc/student/courseCenter/examSubmit.action', data=data, headers=headers)
+                        r = self.session.post('http://web.els.abc/student/courseCenter/examSubmit.action',
+                                              data=data,
+                                              headers=headers)
                         if r.status_code == 200:
-                            if is_pass(r.text):
+                            if self.is_passed(r.text):
                                 print('pass')
-                                return
+                                return self
             else:
-                question_id, answers = is_contains_single_select(questions)
+                question_id, answers = self.is_contains_single_select(questions)
                 for answer in answers:
                     data['questionId'] = question_id
                     data['questionType' + question_id] = '6'
                     data['questionPoint' + question_id] = quiz_point
                     data['answer_' + question_id] = answer
-                    r = s.post('http://web.els.abc/student/courseCenter/examSubmit.action', data=data, headers=headers)
+                    r = self.session.post('http://web.els.abc/student/courseCenter/examSubmit.action',
+                                          data=data,
+                                          headers=headers)
                     if r.status_code == 200:
-                        if is_pass(r.text):
+                        if self.is_passed(r.text):
                             print('pass')
-                            return
+        return self
