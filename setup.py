@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="skitarii",
-    version="0.0.3",
+    version="0.0.4",
     author="roventine",
     author_email="ukyotachibana@yeah.net",
     description="automata for routine",
